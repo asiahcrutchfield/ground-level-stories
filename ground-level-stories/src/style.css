@@ -123,6 +123,13 @@ button:focus-visible {
   border-radius: 25px;
   aspect-ratio: 1/1;
   width: var(--box-w-norm);
+  display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#image-frame img {
+  max-width: 95%;
 }
 
 #btn-frame {
@@ -130,4 +137,19 @@ button:focus-visible {
     align-items: center;
     justify-content: center;
   gap: 1em;
+}
+
+.arrow {
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+}
+
+#left-arrow {
+  border-left: 10px solid black;
+}
+
+#right-arrow {
+  border-right: 10px solid black;
 }
