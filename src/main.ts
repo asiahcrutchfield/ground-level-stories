@@ -26,3 +26,8 @@ async function fetchStories(): Promise<void> {
 
     console.log(stories)
 }
+
+fetchStories()
+
+// load and display images
+const imgframe = document.querySelector<HTMLDivElement>("#image-frame")
