@@ -20,14 +20,28 @@ type Story = {
 type Stories = Story[]
 
 // fetch story data
-async function fetchStories(): Promise<void> {
+async function fetchStories(): Promise<Stories> {
     const response: Response = await fetch(storyPath)
     const stories: Stories = await response.json()
 
-    console.log(stories)
+    return stories
 }
 
-fetchStories()
+let storyIndex: number = 0
+
+// load story by index number
+async function loadStory(index: number): Promise<Story> {
+    const stories = await fetchStories()
+    let story = stories[index]
+
+    return story
+}
+
+const story = await loadStory(storyIndex)
 
 // load and display images
 const imgframe = document.querySelector<HTMLDivElement>("#image-frame")
+const imgBtns = document.querySelectorAll<HTMLButtonElement>(".nav-btn")
+let imgIndex: number = 0
+
+// 1. load all images based on coreVocab

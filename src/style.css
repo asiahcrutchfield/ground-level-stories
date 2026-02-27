@@ -136,6 +136,10 @@ button:focus-visible {
   display: none;
 }
 
+.no-display {
+  display: block;
+}
+
 #btn-frame {
   display: flex;
     align-items: center;
