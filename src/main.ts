@@ -44,13 +44,13 @@ const story = await loadStory(storyIndex)
 // load and display images and audio
 const imgframe = document.querySelector<HTMLDivElement>("#image-frame")
 const vocabAudio = document.querySelector<HTMLAudioElement>(".vocab-audio")
-const imgBtns = document.querySelectorAll<HTMLButtonElement>(".nav-btn")
 
 // 1. load all images based on coreVocab
 function initImages(storyItem: Story): void {
     if (!imgframe) return
     imgframe.innerHTML = ""
 
+    // append all the core vocab to the image frame
     storyItem.coreVocab.forEach((vocab: string, index: number) => {
         const imagefilename = storyItem.images[vocab]
         const img = document.createElement("img")
@@ -60,7 +60,7 @@ function initImages(storyItem: Story): void {
         imgframe.append(img)
         
         if (index === 0) {
-            img.classList.add("img-display")
+            img.classList.add("img-display") // only display the first image
         }
     })
 }
@@ -70,8 +70,53 @@ initImages(story)
 function initVocabAudio(storyItem: Story): void {
     if (!vocabAudio) return
 
+
     vocabAudio.src = `${audioPath}${storyItem.vocabAudio[storyItem.coreVocab[0]]}`
+    vocabAudio.load() // load the correct audio
 }
 initVocabAudio(story)
 
+let vocabIndex: number = 0
+
 // 3. cycle through images and audio
+const forwardBtn = document.querySelector<HTMLButtonElement>("#forward")
+const backBtn = document.querySelector<HTMLButtonElement>("#backward")
+const vocabImages = document.querySelectorAll<HTMLImageElement>(".primer-image")
+    const numOfImages: number = vocabImages.length
+
+function forward(): void {
+    if (forwardBtn) {
+        forwardBtn.addEventListener("click", () => {
+            const prevIndex: number = vocabIndex
+            vocabIndex = (vocabIndex + 1) % numOfImages
+            vocabImages[prevIndex].classList.remove("img-display")
+            vocabImages[vocabIndex].classList.add("img-display")
+            if (vocabAudio) {
+                vocabAudio.src = `${audioPath}${story.vocabAudio[story.coreVocab[vocabIndex]]}`
+                vocabAudio.load() // load the correct audio
+            }
+        })
+    }
+}
+
+function backward(): void {
+    if (backBtn) {
+        backBtn.addEventListener("click", () => {
+            const nextIndex: number = vocabIndex
+            vocabIndex = (vocabIndex - 1 + numOfImages) % numOfImages
+            vocabImages[nextIndex].classList.remove("img-display")
+            vocabImages[vocabIndex].classList.add("img-display")
+            if (vocabAudio) {
+                vocabAudio.src = `${audioPath}${story.vocabAudio[story.coreVocab[vocabIndex]]}`
+                vocabAudio.load() // load the correct audio
+            }
+        })
+    }
+}
+
+function imageSelect(): void {
+    forward()
+    backward()
+}
+
+imageSelect()
