@@ -4,7 +4,8 @@ import "./style.css"
 let storyLang: string = "zh"
 let level: string = "0"
 const imgPath: string = `/dictionary/${storyLang}/images/`
-const audioPath: string = `/dictionary/${storyLang}/audio/lvl${level}/`
+const vocabAudioPath: string = `/dictionary/${storyLang}/audio/lvl${level}/vocab/`
+const storyAudioPath: string = `/dictionary/${storyLang}/audio/lvl${level}/stories/`
 const storyPath: string = `/dictionary/${storyLang}/levels/lvl${level}/stories.json` // path to stories
 const vocabPath: string = `/dictionary/${storyLang}/levels/lvl${level}/lvl${level}.json` // path to vocab list
 
@@ -71,7 +72,7 @@ function initVocabAudio(storyItem: Story): void {
     if (!vocabAudio) return
 
 
-    vocabAudio.src = `${audioPath}${storyItem.vocabAudio[storyItem.coreVocab[0]]}`
+    vocabAudio.src = `${vocabAudioPath}${storyItem.vocabAudio[storyItem.coreVocab[0]]}`
     vocabAudio.load() // load the correct audio
 }
 initVocabAudio(story)
@@ -92,7 +93,7 @@ function forward(): void {
             vocabImages[prevIndex].classList.remove("img-display")
             vocabImages[vocabIndex].classList.add("img-display")
             if (vocabAudio) {
-                vocabAudio.src = `${audioPath}${story.vocabAudio[story.coreVocab[vocabIndex]]}`
+                vocabAudio.src = `${vocabAudioPath}${story.vocabAudio[story.coreVocab[vocabIndex]]}`
                 vocabAudio.load() // load the correct audio
             }
         })
@@ -107,16 +108,27 @@ function backward(): void {
             vocabImages[nextIndex].classList.remove("img-display")
             vocabImages[vocabIndex].classList.add("img-display")
             if (vocabAudio) {
-                vocabAudio.src = `${audioPath}${story.vocabAudio[story.coreVocab[vocabIndex]]}`
+                vocabAudio.src = `${vocabAudioPath}${story.vocabAudio[story.coreVocab[vocabIndex]]}`
                 vocabAudio.load() // load the correct audio
             }
         })
     }
 }
 
+// activate front and back buttons
 function imagePrimer(): void {
     forward()
     backward()
 }
-
 imagePrimer()
+
+// 4. initialize story
+const storyPlayer = document.querySelector<HTMLAudioElement>("#story")
+
+function initStory(): void {
+    if (!storyPlayer) return
+
+    storyPlayer.src = `${storyAudioPath}${story.audio}`
+    storyPlayer.load()
+}
+initStory()
