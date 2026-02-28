@@ -114,9 +114,9 @@ function backward(): void {
     }
 }
 
-function imageSelect(): void {
+function imagePrimer(): void {
     forward()
     backward()
 }
 
-imageSelect()
+imagePrimer()
