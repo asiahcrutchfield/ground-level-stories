@@ -4,7 +4,7 @@ import "./style.css"
 let storyLang: string = "zh"
 let level: string = "0"
 const imgPath: string = `/dictionary/${storyLang}/images/`
-const audioPath: string = `/dictionary/${storyLang}/audio/lvl${level}`
+const audioPath: string = `/dictionary/${storyLang}/audio/lvl${level}/`
 const storyPath: string = `/dictionary/${storyLang}/levels/lvl${level}/stories.json` // path to stories
 const vocabPath: string = `/dictionary/${storyLang}/levels/lvl${level}/lvl${level}.json` // path to vocab list
 
@@ -14,7 +14,9 @@ type Story = {
     title: string,
     coreVocab: string[],
     lines: string[],
-    audio: string
+    audio: string,
+    images: {[imageName: string]: string},
+    vocabAudio: {[audioName: string]: string}
 }
 
 type Stories = Story[]
@@ -39,9 +41,37 @@ async function loadStory(index: number): Promise<Story> {
 
 const story = await loadStory(storyIndex)
 
-// load and display images
+// load and display images and audio
 const imgframe = document.querySelector<HTMLDivElement>("#image-frame")
+const vocabAudio = document.querySelector<HTMLAudioElement>(".vocab-audio")
 const imgBtns = document.querySelectorAll<HTMLButtonElement>(".nav-btn")
-let imgIndex: number = 0
 
 // 1. load all images based on coreVocab
+function initImages(storyItem: Story): void {
+    if (!imgframe) return
+    imgframe.innerHTML = ""
+
+    storyItem.coreVocab.forEach((vocab: string, index: number) => {
+        const imagefilename = storyItem.images[vocab]
+        const img = document.createElement("img")
+            img.classList.add("primer-image")
+            img.src = `${imgPath}${imagefilename}`
+            img.alt = `${imagefilename}`
+        imgframe.append(img)
+        
+        if (index === 0) {
+            img.classList.add("img-display")
+        }
+    })
+}
+initImages(story)
+
+// 2. initialize correct vocab audio
+function initVocabAudio(storyItem: Story): void {
+    if (!vocabAudio) return
+
+    vocabAudio.src = `${audioPath}${storyItem.vocabAudio[storyItem.coreVocab[0]]}`
+}
+initVocabAudio(story)
+
+// 3. cycle through images and audio

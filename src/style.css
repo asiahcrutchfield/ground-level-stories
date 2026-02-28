@@ -132,11 +132,11 @@ button:focus-visible {
   max-width: 95%;
 }
 
-#primer-image {
+.primer-image {
   display: none;
 }
 
-.no-display {
+.img-display {
   display: block;
 }
 
