@@ -2,6 +2,8 @@
     {
         "id": "s0-001",
         "title": "貓在公園",
+        "arc": "stray",
+        "perspective": "cat",
         "coreVocab": ["貓", "公園", "手機", "水", "朋友"],
         "images": {
             "貓": "貓.jpg",
