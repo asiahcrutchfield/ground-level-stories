@@ -32,15 +32,45 @@ async function fetchStories(): Promise<Stories> {
 
 let storyIndex: number = 0
 
+// fetch dictionary
+async function fetchVocab(): Promise<string[]> {
+    const response: Response = await fetch(vocabPath)
+    const dict = await response.json()
+
+    return dict
+}
+const vocabDict: string[] = await fetchVocab()
+
 // load story by index number
-async function loadStory(index: number): Promise<Story> {
+async function loadStory(): Promise<Story> {
     const stories = await fetchStories()
-    let story = stories[index]
+    const storySelector = document.querySelector<HTMLSelectElement>("#story-select") 
+
+    // populate selections
+    stories.forEach((story: Story, index: number) => {
+        const option: HTMLOptionElement = document.createElement("option")
+            option.value = `story-${index+1}`
+            option.textContent = `${story.title}`
+        storySelector?.append(option)
+
+        if (index === 0) {
+            option.selected = true
+        }
+    })
+    
+    const options = document.querySelectorAll<HTMLOptionElement>("#story-select option")
+    options.forEach((option: HTMLOptionElement, num: number) => {
+        option.addEventListener("click", ()=> {
+            storyIndex === num
+        })
+    })
+
+    let story = stories[storyIndex]
 
     return story
 }
 
-const story = await loadStory(storyIndex)
+const story = await loadStory()
 
 // load and display images and audio
 const imgframe = document.querySelector<HTMLDivElement>("#image-frame")
@@ -132,3 +162,5 @@ function initStory(): void {
     storyPlayer.load()
 }
 initStory()
+
+// validate vocabulary
