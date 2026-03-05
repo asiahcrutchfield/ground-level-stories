@@ -162,5 +162,3 @@ function initStory(): void {
     storyPlayer.load()
 }
 initStory()
-
-// validate vocabulary
