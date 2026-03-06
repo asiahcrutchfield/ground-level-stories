@@ -37,6 +37,10 @@ h1 {
   line-height: 1.1;
 }
 
+img {
+  max-width: 250px;
+}
+
 #app {
   display: flex;
     flex-direction: column;
@@ -132,7 +136,7 @@ button:focus-visible {
   max-width: 95%;
 }
 
-.primer-image {
+.primer-image, .hide {
   display: none;
 }
 
@@ -160,4 +164,26 @@ button:focus-visible {
 
 #right-arrow {
   border-right: 10px solid black;
+}
+
+.review {
+  display: flex;
+    flex-direction: column;
+    gap: 1em;
+    align-items: center;
+}
+
+.review-answers {
+  display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+}
+
+.correct {
+  outline: 3px solid green;
+}
+
+.review-audio.correct {
+  border-radius: 999px;
 }

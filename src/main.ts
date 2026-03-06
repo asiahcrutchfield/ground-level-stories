@@ -162,3 +162,61 @@ function initStory(): void {
     storyPlayer.load()
 }
 initStory()
+
+// build review sections
+// 1. select random number 
+function randomIndex(arrayLen: number): number {
+    return Math.floor(Math.random() * arrayLen)
+}
+
+// 2. display question image/audio
+const reviewPic = document.querySelector<HTMLImageElement>("#pic-audio img")
+    const picReview = document.querySelector<HTMLDivElement>("#pic-audio")
+const reviewAudio = document.querySelector<HTMLAudioElement>("#audio-pic audio")
+    const audioReview = document.querySelector<HTMLDivElement>("#audio-pic")
+const reviewSection = document.querySelectorAll<HTMLDivElement>(".review")
+
+function loadMedia(): number {
+    const randNum: number = Math.floor(Math.random() * 2)
+
+    reviewSection.forEach(section => {
+        section.classList.add("hide")
+    })
+
+    if (randNum === 0) {
+        picReview?.classList.remove("hide")
+    } else {
+        audioReview?.classList.remove("hide")
+    }
+    return randNum
+}
+
+// 3. build test
+function buildTest(index: number): void {
+    let randIndex: number = randomIndex(index)
+    const picVocab: string = story.images[story.coreVocab[randIndex]]
+        const picAnswers = document.querySelectorAll<HTMLImageElement>("#audio-pic img")
+    const audioVocab: string = story.vocabAudio[story.coreVocab[randIndex]]
+        const audioAnswers = document.querySelectorAll<HTMLAudioElement>("#pic-audio audio")
+    const picAudioTest: number = loadMedia()
+
+    if (picAudioTest === 0) {
+        if (reviewPic) {
+            reviewPic.src = `${imgPath}${picVocab}`
+            // populate the correct answers
+            audioAnswers.forEach((audio: HTMLAudioElement, index: number) => {
+                const correctAudio: number = Math.floor(Math.random() * 2)
+                const correctAnswer = 
+
+                if (index !== correctAudio) {
+                    audio.src = audioVocab
+                }
+                audio.load()
+            })
+        }
+    } else {
+        if (reviewAudio) {
+            reviewAudio.src = `${vocabAudioPath}${audioVocab}`
+        }
+    }
+} 
