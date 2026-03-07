@@ -175,6 +175,7 @@ button:focus-visible {
 
 .review-answers {
   display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 1em;
@@ -186,4 +187,16 @@ button:focus-visible {
 
 .review-audio.correct {
   border-radius: 999px;
+}
+
+.choice {
+  display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.choice-container {
+  display: flex;
+    gap: 1em;
 }

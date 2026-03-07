@@ -169,54 +169,97 @@ function randomIndex(arrayLen: number): number {
     return Math.floor(Math.random() * arrayLen)
 }
 
-// 2. display question image/audio
-const reviewPic = document.querySelector<HTMLImageElement>("#pic-audio img")
-    const picReview = document.querySelector<HTMLDivElement>("#pic-audio")
-const reviewAudio = document.querySelector<HTMLAudioElement>("#audio-pic audio")
-    const audioReview = document.querySelector<HTMLDivElement>("#audio-pic")
-const reviewSection = document.querySelectorAll<HTMLDivElement>(".review")
+// 2. remove item from list
+function removeItem(arr: string[], itemIndex: number): void {
+    arr.splice(itemIndex, 1)
+}
 
-function loadMedia(): number {
+// 3. display question image/audio
+const tests: NodeListOf<HTMLDivElement> = document.querySelectorAll<HTMLDivElement>(".review")
+const imgTest: HTMLDivElement = document.querySelector<HTMLDivElement>("#pic-audio")!
+    const imgQuestion: HTMLImageElement = document.querySelector<HTMLImageElement>("#pic-audio .review-img")!
+const audioTest: HTMLDivElement = document.querySelector<HTMLDivElement>("#audio-pic")!
+    const audioQuestion: HTMLAudioElement = document.querySelector<HTMLAudioElement>("#audio-pic .review-audio")!
+
+function loadQuestion(arr: string[], indexNum: number): number {
     const randNum: number = Math.floor(Math.random() * 2)
+    const imgAudioWord: string = arr[indexNum]
 
-    reviewSection.forEach(section => {
-        section.classList.add("hide")
+    // 1. hide both sections
+    tests.forEach(test => {
+        test.classList.add("hide")
     })
 
+    // 2. display test and question based on randNum
     if (randNum === 0) {
-        picReview?.classList.remove("hide")
+        imgTest.classList.remove("hide")
+        imgQuestion.src = `${imgPath}${story.images[imgAudioWord]}`
     } else {
-        audioReview?.classList.remove("hide")
+        audioTest.classList.remove("hide")
+        audioQuestion.src = `${vocabAudioPath}${story.vocabAudio[imgAudioWord]}`
+        audioQuestion.load()
     }
+
     return randNum
 }
 
-// 3. build test
-function buildTest(index: number): void {
-    let randIndex: number = randomIndex(index)
-    const picVocab: string = story.images[story.coreVocab[randIndex]]
-        const picAnswers = document.querySelectorAll<HTMLImageElement>("#audio-pic img")
-    const audioVocab: string = story.vocabAudio[story.coreVocab[randIndex]]
-        const audioAnswers = document.querySelectorAll<HTMLAudioElement>("#pic-audio audio")
-    const picAudioTest: number = loadMedia()
+// 4. find item by key
+function getKey(obj: Record<string, string>, value: string): string | undefined {
+    const keyList = Object.keys(obj)
 
-    if (picAudioTest === 0) {
-        if (reviewPic) {
-            reviewPic.src = `${imgPath}${picVocab}`
-            // populate the correct answers
-            audioAnswers.forEach((audio: HTMLAudioElement, index: number) => {
-                const correctAudio: number = Math.floor(Math.random() * 2)
-                const correctAnswer = 
-
-                if (index !== correctAudio) {
-                    audio.src = audioVocab
-                }
-                audio.load()
-            })
-        }
-    } else {
-        if (reviewAudio) {
-            reviewAudio.src = `${vocabAudioPath}${audioVocab}`
+    for (const key of keyList) {
+        if (obj[key] === value) {
+            return key
         }
     }
-} 
+}
+
+// 5. choose random answer item
+const picLabels: NodeListOf<HTMLLabelElement> = document.querySelectorAll<HTMLLabelElement>(".pic-label")
+    const picChoices: NodeListOf<HTMLImageElement> = document.querySelectorAll<HTMLImageElement>(".pic-label .review-img")
+const audioLabels: NodeListOf<HTMLLabelElement> = document.querySelectorAll<HTMLLabelElement>(".audio-label")
+    const audioChoices: NodeListOf<HTMLAudioElement> = document.querySelectorAll<HTMLAudioElement>(".audio-label .review-audio")
+
+function randomAnswer(choiceArr: string[], num: number): number {
+    // get length of choices
+    const picLen: number = picLabels.length
+    const audioLen: number = audioLabels.length
+    // get a random number 
+    const correctPic = Math.floor(Math.random() * picLen) 
+    const correctAudio = Math.floor(Math.random() * audioLen)
+
+    // populate correct answer
+    if (num === 0) {
+        const imgName: string = imgQuestion.src.split("/").pop()!
+        const imgKey = getKey(story.images, imgName)
+        audioChoices[correctAudio].src = `${vocabAudioPath}${story.vocabAudio[imgKey]}`
+        const audioIndex: number =  choiceArr.indexOf(imgKey)
+        removeItem(choiceArr, audioIndex)
+
+        audioChoices.forEach((audio: HTMLAudioElement, index: number) => {
+            if (index === correctAudio) return
+
+            const randomAudio = Math.floor(Math.random() * choiceArr.length)
+            audio.src = `${vocabAudioPath}${story.vocabAudio[choiceArr[randomAudio]]}`
+            audio.load()
+        })
+
+        return correctAudio
+    } else {
+        const audioName: string = audioQuestion.src.split("/").pop()!
+        const audioKey = getKey(story.vocabAudio, audioName)
+        picChoices[correctPic].src = `${imgPath}${story.images[audioKey]}`
+        const imgIndex: number =  choiceArr.indexOf(audioKey)
+        removeItem(choiceArr, imgIndex)
+
+        picChoices.forEach((img: HTMLImageElement, index: number) => {
+            if (index === correctPic) return
+
+            const randomPic = Math.floor(Math.random() * choiceArr.length)
+            img.src = `${imgPath}${story.images[choiceArr[randomPic]]}`
+        })
+
+        return correctPic
+    }
+}
+

@@ -34,19 +34,49 @@
       <div class="review" id="pic-audio">
         <img src="/dictionary/zh/images/公園.jpg" class="review-img">
 
-        <div class="review-answers">
-          <audio controls class="review-audio"></audio>
-          <audio controls class="review-audio"></audio>
-        </div>
+        <form class="review-answers">
+          <div class="choice-container">
+            <div class="choice">
+              <label class="audio-label" for="audio-choice_1">
+                <audio controls class="review-audio"></audio>
+              </label>
+              <input type="radio" name="audio-choice" id="audio-choice_1">
+            </div>
+
+            <div class="choice">
+              <label class="audio-label" for="audio-choice_2">
+                <audio controls class="review-audio"></audio>
+              </label>
+              <input type="radio" name="audio-choice" id="audio-choice_2">
+            </div>
+          </div>
+
+          <button type="submit" class="answer-submit">Submit</button>
+        </form>
       </div>
 
       <div class="review" id="audio-pic">
         <audio controls class="review-audio"></audio>
 
-        <div class="review-answers">
-          <img src="/dictionary/zh/images/貓.jpg" class="review-img">
-          <img src="/dictionary/zh/images/手機.jpg" class="review-img">
-        </div>
+        <form class="review-answers">
+          <div class="choice-container">
+            <div class="choice">
+              <label class="pic-label" for="pic-choice_1">
+                <img src="/dictionary/zh/images/貓.jpg" class="review-img">
+              </label>
+              <input type="radio" name="pic-choice" id="pic-choice_1">
+            </div>
+
+            <div class="choice">
+              <label class="pic-label" for="pic-choice_2">
+                <img src="/dictionary/zh/images/手機.jpg" class="review-img">
+              </label>
+              <input type="radio" name="pic-choice" id="pic-choice_2">
+            </div>
+          </div>
+
+          <button type="submit" class="answer-submit">Submit</button>
+        </form>
       </div>
     </div>
 
