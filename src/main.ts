@@ -214,11 +214,13 @@ function getKey(obj: Record<string, string>, value: string): string | undefined 
     }
 }
 
-// 5. choose random answer item
+// 5. choose random answer item and populate choices
 const picLabels: NodeListOf<HTMLLabelElement> = document.querySelectorAll<HTMLLabelElement>(".pic-label")
     const picChoices: NodeListOf<HTMLImageElement> = document.querySelectorAll<HTMLImageElement>(".pic-label .review-img")
 const audioLabels: NodeListOf<HTMLLabelElement> = document.querySelectorAll<HTMLLabelElement>(".audio-label")
     const audioChoices: NodeListOf<HTMLAudioElement> = document.querySelectorAll<HTMLAudioElement>(".audio-label .review-audio")
+const picRadio: NodeListOf<HTMLInputElement> = document.querySelectorAll<HTMLInputElement>("input[name='pic-choice']")!
+const audioRadio: NodeListOf<HTMLInputElement> = document.querySelectorAll<HTMLInputElement>("input[name='audio-choice']")!
 
 function randomAnswer(choiceArr: string[], num: number): number {
     // get length of choices
@@ -232,14 +234,18 @@ function randomAnswer(choiceArr: string[], num: number): number {
     if (num === 0) {
         const imgName: string = imgQuestion.src.split("/").pop()!
         const imgKey = getKey(story.images, imgName)
-        audioChoices[correctAudio].src = `${vocabAudioPath}${story.vocabAudio[imgKey]}`
-        const audioIndex: number =  choiceArr.indexOf(imgKey)
-        removeItem(choiceArr, audioIndex)
+        if (imgKey) {
+            audioChoices[correctAudio].src = `${vocabAudioPath}${story.vocabAudio[imgKey]}`
+            audioRadio[correctAudio].value = imgKey // add value to radio button
+            const audioIndex: number =  choiceArr.indexOf(imgKey)
+            removeItem(choiceArr, audioIndex)
+        }
 
         audioChoices.forEach((audio: HTMLAudioElement, index: number) => {
             if (index === correctAudio) return
 
             const randomAudio = Math.floor(Math.random() * choiceArr.length)
+            audioRadio[index].value = choiceArr[randomAudio]
             audio.src = `${vocabAudioPath}${story.vocabAudio[choiceArr[randomAudio]]}`
             audio.load()
         })
@@ -248,18 +254,51 @@ function randomAnswer(choiceArr: string[], num: number): number {
     } else {
         const audioName: string = audioQuestion.src.split("/").pop()!
         const audioKey = getKey(story.vocabAudio, audioName)
-        picChoices[correctPic].src = `${imgPath}${story.images[audioKey]}`
-        const imgIndex: number =  choiceArr.indexOf(audioKey)
-        removeItem(choiceArr, imgIndex)
+        if (audioKey) {
+            picChoices[correctPic].src = `${imgPath}${story.images[audioKey]}`
+            picRadio[correctPic].value = audioKey // add value to radio button
+            const imgIndex: number =  choiceArr.indexOf(audioKey)
+            removeItem(choiceArr, imgIndex)
+        }
 
         picChoices.forEach((img: HTMLImageElement, index: number) => {
             if (index === correctPic) return
 
             const randomPic = Math.floor(Math.random() * choiceArr.length)
+            picRadio[index].value = choiceArr[randomPic]
             img.src = `${imgPath}${story.images[choiceArr[randomPic]]}`
         })
 
         return correctPic
     }
 }
+
+// 6. wire submit button
+const reviewForm: HTMLFormElement = document.querySelector<HTMLFormElement>(".review-answers")!
+
+function submit(num: number): void {
+    reviewForm?.addEventListener("submit", (event) => {
+        event.preventDefault()
+
+        const reviewInputs: NodeListOf<HTMLInputElement> = document.querySelectorAll<HTMLInputElement>(".review-answers input")
+        const correctAnswer: string = reviewInputs[num].value
+        const userChoice = document.querySelector<HTMLInputElement>(`input[name=${reviewInputs[num].name}]:checked`) // selected button
+        if (!userChoice) {
+            console.log("No option selected")
+            return
+        }
+        const userAnswer = userChoice.value
+
+        if (userAnswer === correctAnswer) {
+            console.log(`User chose the correct answer (${correctAnswer})`)
+        } else {
+            console.log(`User chose the wrong answer (${userAnswer}). It should be ${correctAnswer}`)
+        }
+        
+    })
+}
+
+
+// 7. construct tests
+
 
