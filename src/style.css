@@ -136,7 +136,7 @@ button:focus-visible {
   max-width: 95%;
 }
 
-.primer-image, .hide {
+.primer-image {
   display: none;
 }
 
@@ -199,4 +199,8 @@ button:focus-visible {
 .choice-container {
   display: flex;
     gap: 1em;
+}
+
+.hide {
+  display: none;
 }

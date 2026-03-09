@@ -163,7 +163,7 @@ function initStory(): void {
 }
 initStory()
 
-// build review sections
+// build test sections
 // 1. select random number 
 function randomIndex(arrayLen: number): number {
     return Math.floor(Math.random() * arrayLen)
@@ -222,7 +222,10 @@ const audioLabels: NodeListOf<HTMLLabelElement> = document.querySelectorAll<HTML
 const picRadio: NodeListOf<HTMLInputElement> = document.querySelectorAll<HTMLInputElement>("input[name='pic-choice']")!
 const audioRadio: NodeListOf<HTMLInputElement> = document.querySelectorAll<HTMLInputElement>("input[name='audio-choice']")!
 
-function randomAnswer(choiceArr: string[], num: number): number {
+function randomAnswer(num: number): number {
+    // create copy of original array
+    const wrongAnswers: string[] = [...story.coreVocab]
+    console.log(wrongAnswers)
     // get length of choices
     const picLen: number = picLabels.length
     const audioLen: number = audioLabels.length
@@ -232,61 +235,95 @@ function randomAnswer(choiceArr: string[], num: number): number {
 
     // populate correct answer
     if (num === 0) {
-        const imgName: string = imgQuestion.src.split("/").pop()!
-        const imgKey = getKey(story.images, imgName)
-        if (imgKey) {
-            audioChoices[correctAudio].src = `${vocabAudioPath}${story.vocabAudio[imgKey]}`
-            audioRadio[correctAudio].value = imgKey // add value to radio button
-            const audioIndex: number =  choiceArr.indexOf(imgKey)
-            removeItem(choiceArr, audioIndex)
-        }
-
+        const imgName: string = imgQuestion.src.split("/").pop()!.split(".")[0]
+            const decodedName = decodeURIComponent(imgName)
+            const newImgName = decodedName.split(".")[0]
+        audioChoices[correctAudio].src = `${vocabAudioPath}${story.vocabAudio[newImgName]}`
+        audioRadio[correctAudio].value = newImgName // add value to radio button
+        audioChoices[correctAudio].load()
+        const audioIndex: number =  wrongAnswers.indexOf(newImgName)
+        removeItem(wrongAnswers, audioIndex)
+    console.log("After removal", wrongAnswers)
         audioChoices.forEach((audio: HTMLAudioElement, index: number) => {
             if (index === correctAudio) return
 
-            const randomAudio = Math.floor(Math.random() * choiceArr.length)
-            audioRadio[index].value = choiceArr[randomAudio]
-            audio.src = `${vocabAudioPath}${story.vocabAudio[choiceArr[randomAudio]]}`
+            const randomAudio = Math.floor(Math.random() * wrongAnswers.length)
+            audioRadio[index].value = wrongAnswers[randomAudio]
+            audio.src = `${vocabAudioPath}${story.vocabAudio[wrongAnswers[randomAudio]]}`
             audio.load()
         })
 
         return correctAudio
     } else {
         const audioName: string = audioQuestion.src.split("/").pop()!
-        const audioKey = getKey(story.vocabAudio, audioName)
-        if (audioKey) {
-            picChoices[correctPic].src = `${imgPath}${story.images[audioKey]}`
-            picRadio[correctPic].value = audioKey // add value to radio button
-            const imgIndex: number =  choiceArr.indexOf(audioKey)
-            removeItem(choiceArr, imgIndex)
-        }
-
+            const decodedName = decodeURIComponent(audioName)
+            const newAudioName = decodedName.split(".")[0]
+        console.log(newAudioName)
+        picChoices[correctPic].src = `${imgPath}${story.images[newAudioName]}`
+        picRadio[correctPic].value = newAudioName // add value to radio button
+        const imgIndex: number =  wrongAnswers.indexOf(newAudioName)
+        removeItem(wrongAnswers, imgIndex)
+        console.log("After removal", wrongAnswers)
         picChoices.forEach((img: HTMLImageElement, index: number) => {
             if (index === correctPic) return
 
-            const randomPic = Math.floor(Math.random() * choiceArr.length)
-            picRadio[index].value = choiceArr[randomPic]
-            img.src = `${imgPath}${story.images[choiceArr[randomPic]]}`
+            const randomPic = Math.floor(Math.random() * wrongAnswers.length)
+            picRadio[index].value = wrongAnswers[randomPic]
+            img.src = `${imgPath}${story.images[wrongAnswers[randomPic]]}`
         })
 
         return correctPic
     }
 }
 
+// shared variables
+const storyCoreVocab: string[] = [...story.coreVocab]
+let currentQuestionIndex: number = -1
+let currentTestType: number = -1
+let correctAnsIndex: number = -1
+
+// 7. construct tests
+function reviewTest(testArr: string[]): void {
+     if (testArr.length === 0) {
+        console.log("All questions completed")
+        return
+    }
+
+    resetRadios()
+
+    currentQuestionIndex = randomIndex(testArr.length)
+
+    currentTestType = loadQuestion(testArr, currentQuestionIndex)
+
+    correctAnsIndex = randomAnswer(currentTestType)
+}
+
+// helper function for tests
+function resetRadios(): void {
+    const radios = document.querySelectorAll<HTMLInputElement>(".review-answers input[type='radio']")
+    radios.forEach(radio => {
+        radio.checked = false
+    })
+}
+
 // 6. wire submit button
 const reviewForm: HTMLFormElement = document.querySelector<HTMLFormElement>(".review-answers")!
 
-function submit(num: number): void {
-    reviewForm?.addEventListener("submit", (event) => {
+function submit(): void {
+    reviewForm.addEventListener("submit", (event) => {
         event.preventDefault()
 
-        const reviewInputs: NodeListOf<HTMLInputElement> = document.querySelectorAll<HTMLInputElement>(".review-answers input")
-        const correctAnswer: string = reviewInputs[num].value
-        const userChoice = document.querySelector<HTMLInputElement>(`input[name=${reviewInputs[num].name}]:checked`) // selected button
+        const reviewInputs = document.querySelectorAll<HTMLInputElement>(".review-answers input")
+        const correctAnswer = reviewInputs[correctAnsIndex].value
+
+        const groupName = reviewInputs[correctAnsIndex].name
+        const userChoice = document.querySelector<HTMLInputElement>(`input[name="${groupName}"]:checked`)
+
         if (!userChoice) {
             console.log("No option selected")
             return
         }
+
         const userAnswer = userChoice.value
 
         if (userAnswer === correctAnswer) {
@@ -294,11 +331,18 @@ function submit(num: number): void {
         } else {
             console.log(`User chose the wrong answer (${userAnswer}). It should be ${correctAnswer}`)
         }
-        
+
+        removeItem(storyCoreVocab, currentQuestionIndex)
+
+        if (storyCoreVocab.length === 0) {
+            console.log("Test complete!")
+            return
+        }
+
+        reviewTest(storyCoreVocab)
     })
 }
 
-
-// 7. construct tests
-
+submit()
+reviewTest(storyCoreVocab)
 
