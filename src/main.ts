@@ -3,11 +3,11 @@ import "./style.css"
 // getting paths to stories, images and audio
 let storyLang: string = "zh"
 let level: string = "0"
-const imgPath: string = `/old_dictionary/${storyLang}/images/`
-const vocabAudioPath: string = `/old_dictionary/${storyLang}/audio/lvl${level}/vocab/`
-const storyAudioPath: string = `/old_dictionary/${storyLang}/audio/lvl${level}/stories/`
-const storyPath: string = `/old_dictionary/${storyLang}/levels/lvl${level}/stories.json` // path to stories
-const vocabPath: string = `/old_dictionary/${storyLang}/levels/lvl${level}/lvl${level}.json` // path to vocab list
+const imgPath: string = `/dictionary/${storyLang}/images/`
+const vocabAudioPath: string = `/dictionary/${storyLang}/audio/lvl${level}/vocab/`
+const storyAudioPath: string = `/dictionary/${storyLang}/audio/lvl${level}/stories/`
+const storyPath: string = `/dictionary/${storyLang}/levels/lvl${level}/stories.json` // path to stories
+const vocabPath: string = `/dictionary/${storyLang}/levels/lvl${level}/lvl${level}.json` // path to vocab list
 
 // defining types
 type Story = {
