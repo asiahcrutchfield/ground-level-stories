@@ -1,0 +1,3 @@
+[submodule "public/dictionary"]
+	path = public/dictionary
+	url = git@github-asiahcrutchfield:asiahcrutchfield/lang-data.git
