@@ -1,19 +1,27 @@
 import "./style.css"
 
-// getting paths to stories, images and audio
+// retrieving info from language engine
 let storyLang: string = "zh"
+const universal: string = "u"
+let conceptNum: number = 0
+let conceptItemNum: number = 0
+    const conceptCat: string = String(conceptNum).padStart(2, '0')
+    const conceptItem: string = String(conceptItemNum).padStart(4, "0")
+
+// getting paths to stories, images and audio
 let level: string = "0"
-const imgPath: string = `/dictionary1/${storyLang}/images/`
-const vocabAudioPath: string = `/dictionary1/${storyLang}/audio/lvl${level}/vocab/`
-const storyAudioPath: string = `/dictionary1/${storyLang}/audio/lvl${level}/stories/`
-const storyPath: string = `/dictionary1/${storyLang}/levels/lvl${level}/stories.json` // path to stories
-const vocabPath: string = `/dictionary1/${storyLang}/levels/lvl${level}/lvl${level}.json` // path to vocab list
+const imgPath1: string = `/dictionary/universal/${storyLang}/images/`
+const imgPath2: string = `/dictionary/langs/${storyLang}/images/`
+const vocabAudioPath: string = `/dictionary/langs/${storyLang}/audio/`
+const storyAudioPath: string = `/stories/langs/${storyLang}/lvl_${level}/`
+const storyPath: string = `/stories/langs/${storyLang}/lvl_${level}/stories.json` // path to stories
+const vocabPath: string = `/dictionary/levels/lang/${storyLang}/lvl_${level}.json` // path to vocab list
 
 // defining types
 type Story = {
     readonly id: string,
     title: string,
-    coreVocab: string[],
+    coreConcepts: string[],
     lines: string[],
     audio: string,
     images: {[imageName: string]: string},
@@ -82,11 +90,11 @@ function initImages(storyItem: Story): void {
     imgframe.innerHTML = ""
 
     // append all the core vocab to the image frame
-    storyItem.coreVocab.forEach((vocab: string, index: number) => {
+    storyItem.coreConcepts.forEach((vocab: string, index: number) => {
         const imagefilename = storyItem.images[vocab]
         const img = document.createElement("img")
             img.classList.add("primer-image")
-            img.src = `${imgPath}${imagefilename}`
+            img.src = `${imgPath1}${imagefilename}`
             img.alt = `${imagefilename}`
         imgframe.append(img)
         
@@ -102,7 +110,7 @@ function initVocabAudio(storyItem: Story): void {
     if (!vocabAudio) return
 
 
-    vocabAudio.src = `${vocabAudioPath}${storyItem.vocabAudio[storyItem.coreVocab[0]]}`
+    vocabAudio.src = `${vocabAudioPath}${storyItem.vocabAudio[storyItem.coreConcepts[0]]}`
     vocabAudio.load() // load the correct audio
 }
 initVocabAudio(story)
@@ -123,7 +131,7 @@ function forward(): void {
             vocabImages[prevIndex].classList.remove("img-display")
             vocabImages[vocabIndex].classList.add("img-display")
             if (vocabAudio) {
-                vocabAudio.src = `${vocabAudioPath}${story.vocabAudio[story.coreVocab[vocabIndex]]}`
+                vocabAudio.src = `${vocabAudioPath}${story.vocabAudio[story.coreConcepts[vocabIndex]]}`
                 vocabAudio.load() // load the correct audio
             }
         })
@@ -138,7 +146,7 @@ function backward(): void {
             vocabImages[nextIndex].classList.remove("img-display")
             vocabImages[vocabIndex].classList.add("img-display")
             if (vocabAudio) {
-                vocabAudio.src = `${vocabAudioPath}${story.vocabAudio[story.coreVocab[vocabIndex]]}`
+                vocabAudio.src = `${vocabAudioPath}${story.vocabAudio[story.coreConcepts[vocabIndex]]}`
                 vocabAudio.load() // load the correct audio
             }
         })
@@ -193,7 +201,7 @@ function loadQuestion(arr: string[], indexNum: number): number {
     // 2. display test and question based on randNum
     if (randNum === 0) {
         imgTest.classList.remove("hide")
-        imgQuestion.src = `${imgPath}${story.images[imgAudioWord]}`
+        imgQuestion.src = `${imgPath1}${story.images[imgAudioWord]}`
     } else {
         audioTest.classList.remove("hide")
         audioQuestion.src = `${vocabAudioPath}${story.vocabAudio[imgAudioWord]}`
@@ -224,7 +232,7 @@ const audioRadio: NodeListOf<HTMLInputElement> = document.querySelectorAll<HTMLI
 
 function randomAnswer(num: number): number {
     // create copy of original array
-    const wrongAnswers: string[] = [...story.coreVocab]
+    const wrongAnswers: string[] = [...story.coreConcepts]
     console.log(wrongAnswers)
     // get length of choices
     const picLen: number = picLabels.length
@@ -259,7 +267,7 @@ function randomAnswer(num: number): number {
             const decodedName = decodeURIComponent(audioName)
             const newAudioName = decodedName.split(".")[0]
         console.log(newAudioName)
-        picChoices[correctPic].src = `${imgPath}${story.images[newAudioName]}`
+        picChoices[correctPic].src = `${imgPath1}${story.images[newAudioName]}`
         picRadio[correctPic].value = newAudioName // add value to radio button
         const imgIndex: number =  wrongAnswers.indexOf(newAudioName)
         removeItem(wrongAnswers, imgIndex)
@@ -269,7 +277,7 @@ function randomAnswer(num: number): number {
 
             const randomPic = Math.floor(Math.random() * wrongAnswers.length)
             picRadio[index].value = wrongAnswers[randomPic]
-            img.src = `${imgPath}${story.images[wrongAnswers[randomPic]]}`
+            img.src = `${imgPath1}${story.images[wrongAnswers[randomPic]]}`
         })
 
         return correctPic
@@ -277,7 +285,7 @@ function randomAnswer(num: number): number {
 }
 
 // shared variables
-const storyCoreVocab: string[] = [...story.coreVocab]
+const storyCoreVocab: string[] = [...story.coreConcepts]
 let currentQuestionIndex: number = -1
 let currentTestType: number = -1
 let correctAnsIndex: number = -1
