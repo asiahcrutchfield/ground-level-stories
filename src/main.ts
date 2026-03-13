@@ -10,7 +10,7 @@ let conceptItemNum: number = 0
 
 // getting paths to stories, images and audio
 let level: string = "0"
-const imgPath1: string = `/dictionary/universal/${storyLang}/images/`
+const imgPath1: string = `/dictionary/universal/images/`
 const imgPath2: string = `/dictionary/langs/${storyLang}/images/`
 const vocabAudioPath: string = `/dictionary/langs/${storyLang}/audio/`
 const storyAudioPath: string = `/stories/langs/${storyLang}/lvl_${level}/`
