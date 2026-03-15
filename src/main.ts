@@ -109,7 +109,6 @@ initImages(story)
 function initVocabAudio(storyItem: Story): void {
     if (!vocabAudio) return
 
-
     vocabAudio.src = `${vocabAudioPath}${storyItem.vocabAudio[storyItem.coreConcepts[0]]}`
     vocabAudio.load() // load the correct audio
 }
@@ -230,9 +229,39 @@ const audioLabels: NodeListOf<HTMLLabelElement> = document.querySelectorAll<HTML
 const picRadio: NodeListOf<HTMLInputElement> = document.querySelectorAll<HTMLInputElement>("input[name='pic-choice']")!
 const audioRadio: NodeListOf<HTMLInputElement> = document.querySelectorAll<HTMLInputElement>("input[name='audio-choice']")!
 
+// fetch label data
+const labelPath = `/dictionary/langs/${storyLang}/labels.json` 
+
+// create label type
+type LabelImage = {
+    filename: string,
+    type: string
+}
+type LabelAudio = {
+    filename: string,
+    gender: string
+}
+type LabelEntry = {
+    vocab: string,
+    image: LabelImage[],
+    audio: LabelAudio[]
+}
+
+type Labels = {
+    [conceptId: string]: LabelEntry
+}
+
+async function fetchLabels(): Promise<Labels> {
+    const response: Response = await fetch(labelPath)
+    const labels: Labels = await response.json()
+
+    return labels
+}
+const langLabels: Labels = await fetchLabels()
+
 function randomAnswer(num: number): number {
     // create copy of original array
-    const wrongAnswers: string[] = [...story.coreConcepts]
+    const wrongAnswers: string[] = [...story.coreConcepts] // copy of story vocab array
     console.log(wrongAnswers)
     // get length of choices
     const picLen: number = picLabels.length
@@ -240,34 +269,40 @@ function randomAnswer(num: number): number {
     // get a random number 
     const correctPic = Math.floor(Math.random() * picLen) 
     const correctAudio = Math.floor(Math.random() * audioLen)
+    // get question names
+    const imgName: string = imgQuestion.src.split("/").pop()!.split(".")[0]
+        const imgLabel: LabelEntry = langLabels.imgName
+            const imgLabelLength: number = Math.floor(Math.random()*imgLabel.image.length)
+            const labelImg: LabelImage = imgLabel.image[imgLabelLength]
+        const imgVocab: string = imgLabel.vocab
+    const audioName: string = audioQuestion.src.split("/").pop()!
+        const audioLabel: LabelEntry = langLabels.audioName
+            const audioLabelLength: number = Math.floor(Math.random()*audioLabel.audio.length)
+            const labelAudio: LabelAudio = audioLabel.audio[audioLabelLength]
+        const audioVocab: string = audioLabel.vocab 
 
     // populate correct answer
     if (num === 0) {
-        const imgName: string = imgQuestion.src.split("/").pop()!.split(".")[0]
-            const decodedName = decodeURIComponent(imgName)
-            const newImgName = decodedName.split(".")[0]
-        audioChoices[correctAudio].src = `${vocabAudioPath}${story.vocabAudio[newImgName]}`
-        audioRadio[correctAudio].value = newImgName // add value to radio button
+        audioChoices[correctAudio].src = `${vocabAudioPath}${labelAudio.filename}`
+        audioRadio[correctAudio].value = audioName // add value to radio button
         audioChoices[correctAudio].load()
-        const audioIndex: number =  wrongAnswers.indexOf(newImgName)
+        const audioIndex: number =  wrongAnswers.indexOf(audioVocab)
         removeItem(wrongAnswers, audioIndex)
     console.log("After removal", wrongAnswers)
+        // populate wrong answers
         audioChoices.forEach((audio: HTMLAudioElement, index: number) => {
             if (index === correctAudio) return
 
-            const randomAudio = Math.floor(Math.random() * wrongAnswers.length)
-            audioRadio[index].value = wrongAnswers[randomAudio]
-            audio.src = `${vocabAudioPath}${story.vocabAudio[wrongAnswers[randomAudio]]}`
+            const randomAudio: number = Math.floor(Math.random() * wrongAnswers.length)
+                const audioString: string = wrongAnswers[randomAudio]
+            audioRadio[index].value = langLabels.audioString.audio[audioLabelLength].filename.split(".")[0]
+            audio.src = `${vocabAudioPath}${langLabels.audioString.audio[audioLabelLength].filename}`
             audio.load()
         })
 
         return correctAudio
     } else {
-        const audioName: string = audioQuestion.src.split("/").pop()!
-            const decodedName = decodeURIComponent(audioName)
-            const newAudioName = decodedName.split(".")[0]
-        console.log(newAudioName)
-        picChoices[correctPic].src = `${imgPath1}${story.images[newAudioName]}`
+        picChoices[correctPic].src = `${imgPath1}${labelImg.filename}`
         picRadio[correctPic].value = newAudioName // add value to radio button
         const imgIndex: number =  wrongAnswers.indexOf(newAudioName)
         removeItem(wrongAnswers, imgIndex)
