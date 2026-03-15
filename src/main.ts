@@ -246,6 +246,7 @@ function loadQuestion(arr: string[], indexNum: number): QuestionInfo {
             const randomImage: number = Math.floor(Math.random()*imageQuestionLen)
         imgQuestion.src = `${imgPath1}${langLabels[imgAudioWord].image[randomImage].filename}`
         imgQuestion.dataset.concept = imgAudioWord
+        imgQuestion.alt = imgAudioWord
     } else {
         audioTest.classList.remove("hide")
         const audioQuestionLen: number = langLabels[imgAudioWord].audio.length
@@ -323,6 +324,7 @@ function randomAnswer(question: QuestionInfo): number {
                 const picString: string = wrongAnswers[randomPic]
             picRadio[index].value = langLabels[picString].image[randCorrectImage].filename.split(".")[0]
             img.src = `${imgPath1}${langLabels[picString].image[randCorrectImage].filename}`
+            img.alt = picString
         })
 
         return correctPic
