@@ -273,7 +273,6 @@ const audioRadio: NodeListOf<HTMLInputElement> = document.querySelectorAll<HTMLI
 function randomAnswer(question: QuestionInfo): number {
     // create copy of original array
     const wrongAnswers: string[] = [...story.coreConcepts] // copy of story vocab array
-    console.log(wrongAnswers)
     // get length of choices
     const picLen: number = picLabels.length
     const audioLen: number = audioLabels.length
@@ -294,7 +293,6 @@ function randomAnswer(question: QuestionInfo): number {
         audioChoices[correctAudio].load()
         const audioIndex: number =  wrongAnswers.indexOf(currentConcept)
         removeItem(wrongAnswers, audioIndex)
-        console.log("After removal", wrongAnswers)
         // populate wrong answers
         audioChoices.forEach((audio: HTMLAudioElement, index: number) => {
             if (index === correctAudio) return
@@ -315,7 +313,6 @@ function randomAnswer(question: QuestionInfo): number {
         picRadio[correctPic].value = currentConcept // add value to radio button
         const imgIndex: number =  wrongAnswers.indexOf(currentConcept)
         removeItem(wrongAnswers, imgIndex)
-        console.log("After removal", wrongAnswers)
         // populate wrong answers
         picChoices.forEach((img: HTMLImageElement, index: number) => {
             if (index === correctPic) return
@@ -361,40 +358,42 @@ function resetRadios(): void {
 }
 
 // 6. wire submit button
-const reviewForm: HTMLFormElement = document.querySelector<HTMLFormElement>(".review-answers")!
+const reviewForms: NodeListOf<HTMLFormElement> = document.querySelectorAll<HTMLFormElement>(".review-answers")!
 
 function submit(): void {
-    reviewForm.addEventListener("submit", (event) => {
-        event.preventDefault()
+    reviewForms.forEach((form) => {
+        form.addEventListener("submit", (event) => {
+            event.preventDefault()
 
-        const reviewInputs = document.querySelectorAll<HTMLInputElement>(".review-answers input")
-        const correctAnswer = reviewInputs[correctAnsIndex].value
+            const reviewInputs = form.querySelectorAll<HTMLInputElement>(".review-answers input")
+            const correctAnswer = reviewInputs[correctAnsIndex].value
 
-        const groupName = reviewInputs[correctAnsIndex].name
-        const userChoice = document.querySelector<HTMLInputElement>(`input[name="${groupName}"]:checked`)
+            const groupName = reviewInputs[correctAnsIndex].name
+            const userChoice = form.querySelector<HTMLInputElement>(`input[name="${groupName}"]:checked`)
 
-        if (!userChoice) {
-            console.log("No option selected")
-            return
-        }
+            if (!userChoice) {
+                console.log("No option selected")
+                return
+            }
 
-        const userAnswer = userChoice.value
+            const userAnswer = userChoice.value
 
-        if (userAnswer === correctAnswer) {
-            console.log(`User chose the correct answer (${correctAnswer})`)
-        } else {
-            console.log(`User chose the wrong answer (${userAnswer}). It should be ${correctAnswer}`)
-        }
+            if (userAnswer === correctAnswer) {
+                console.log(`User chose the correct answer (${correctAnswer})`)
+            } else {
+                console.log(`User chose the wrong answer (${userAnswer}). It should be ${correctAnswer}`)
+            }
 
-        removeItem(storyCoreVocab, currentQuestionIndex)
+            removeItem(storyCoreVocab, currentQuestionIndex)
 
-        if (storyCoreVocab.length === 0) {
-            console.log("Test complete!")
-            return
-        }
+            if (storyCoreVocab.length === 0) {
+                console.log("Test complete!")
+                return
+            }
 
-        reviewTest(storyCoreVocab)
-    })
+            reviewTest(storyCoreVocab)
+        })
+    })     
 }
 
 submit()
